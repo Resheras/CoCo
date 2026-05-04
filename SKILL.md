@@ -25,8 +25,17 @@ A comprehensive 22-point audit of a Cortex Agent's full `agent_spec`, grouped in
 ## Step 1: Extract the Full Agent Spec
 
 **Actions:**
-1. **Run** `DESCRIBE AGENT <fully_qualified_agent_name>` to retrieve the full agent_spec
-2. **If truncated**, extract in chunks using `SUBSTR($7, <offset>, 1000)` from `TABLE(RESULT_SCAN(LAST_QUERY_ID()))` until the full spec is captured
+1. **If the user does not provide a fully qualified agent name**, run `SHOW AGENTS IN ACCOUNT` (or `SHOW AGENTS IN DATABASE <db>`) to locate the agent and construct its fully qualified name (`<database>.<schema>.<agent_name>`).
+2. **Run** `DESCRIBE AGENT <fully_qualified_agent_name>` to retrieve the full agent_spec.
+3. **If truncated**, extract the full spec using the quoted column name `"agent_spec"` (NOT positional `$7`):
+   - First, get the length: `SELECT LENGTH("agent_spec") AS len FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))`
+   - Then re-run `DESCRIBE AGENT <name>` and extract chunks:
+     `SELECT SUBSTR("agent_spec", 1, 1500) AS part FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))`
+   - For each subsequent chunk, re-run `DESCRIBE AGENT` first (since `LAST_QUERY_ID()` changes after every query), then:
+     `SELECT SUBSTR("agent_spec", 1501, 1500) AS part FROM TABLE(RESULT_SCAN(LAST_QUERY_ID()))`
+   - Repeat until the full spec is captured.
+
+**⚠️ Important:** `LAST_QUERY_ID()` always refers to the most recent query. You must re-run `DESCRIBE AGENT` before each `SUBSTR` call, or extract all needed chunks in a single query (e.g., multiple SUBSTR columns in one SELECT).
 
 **Output:** Complete agent_spec text ready for audit
 
