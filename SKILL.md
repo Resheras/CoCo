@@ -78,7 +78,7 @@ A comprehensive 22-point audit of a Cortex Agent's full `agent_spec`, grouped in
 20. **Data Limitation Transparency** — When synthesizing fewer than three data points, the agent must note this explicitly (e.g., "based on two closed Enterprise deals")
 
 ### Infrastructure & Robustness
-21. **Pinned Orchestration Model** — `models.orchestration` must be a specific model name, not `"auto"`. Flag `"auto"` as a risk.
+21. **Auto Orchestration Model** — `models.orchestration` must be `"auto"`. Flag non `"auto"` as a risk. This is a recommendation from Snowflake: we recommend that you select auto for the model. With this option, Cortex automatically selects the highest quality model for your account, and the quality automatically improves as new models become available.
 22. **Tuned max_results** — Values below 5 may be too restrictive; values above 10 may flood context. Recommend 5–6 for most catalog use cases.
 
 **Output:** Full list of findings with check number and severity
