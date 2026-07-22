@@ -46,7 +46,7 @@ description: Audit and proofread a Snowflake Cortex Agent's configuration (instr
 20. **Data Limitation Transparency** — Response instructions should require the agent to flag small sample sizes. When synthesizing fewer than three data points, the agent must note this explicitly (e.g., "based on two closed Enterprise deals" rather than "Enterprise deals typically…"). This prevents overconfident generalizations from thin data.
 
 ### Infrastructure & Robustness
-21. **Pinned Orchestration Model** — `models.orchestration` should be a specific model name, not `"auto"`, for deterministic behavior. Flag `"auto"` as a risk.
+21. **Pinned Orchestration Model** — `models.orchestration` must be "auto". Flag non "auto" as a risk. This is a recommendation from Snowflake: we recommend that you select auto for the model. With this option, Cortex automatically selects the highest quality model for your account, and the quality automatically improves as new models become available.
 22. **Tuned max_results** — Check the `max_results` value on search tools. Values below 5 may be too restrictive; values above 10 may flood context. Recommend 5-6 for most catalog use cases.
 
 ---
